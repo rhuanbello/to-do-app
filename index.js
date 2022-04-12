@@ -1,91 +1,53 @@
-const inputName = document.querySelector('.name');
-const inputLastname = document.querySelector('.lastname');
-const inputEmail = document.querySelector('.email');
-const inputPassword = Array.from(document.querySelectorAll('input[type="password"]'));
-const button = document.querySelector('button');
 const form = document.querySelector('form');
+const inputEmail = document.querySelector('input[type="text"]');
+const inputPassword = document.querySelector('input[type="password"]');
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  console.log('validateName()', validateName(10))
-  console.log('validateLastname()', validateName(15))
-  console.log('validateEmail()', validateEmail())
-  console.log('validatePassword()', validatePassword())
-  
-  if (validatePassword()) {
-    postCreateUser()
+  const minLength = 6;
+  const maxLength = 24;
+  const emailValue = inputEmail.value;
+
+  const isEmailValid = emailValue.length >= minLength && 
+    emailValue.length <= maxLength &&
+    emailValue.slice(-4).includes('.com');
+
+  if (isEmailValid) {
+    postUserLogin()
+  } else {
+    alert(`E-mail ${emailValue} inválido!`);
   }
+
 })
 
-const postCreateUser = () => {
-  const baseURL = 'https://ctd-todo-api.herokuapp.com/v1'
+const postUserLogin = () => {
+  const baseURL = 'https://ctd-todo-api.herokuapp.com/v1';
+
   const userObject = {
-    firstName: inputName.value.toString(),
-    lastName: inputLastname.value.toString(),
     email: inputEmail.value.toString(),
-    password: inputPassword[0].value.toString()
-  }
+    password: inputPassword.value.toString()
+  };
 
-  console.log('usuario criado', userObject)
-
-  fetch(baseURL + '/users', {
+  fetch(`${baseURL}/users/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(userObject)
   })
-   .then(response => {
+    .then(response => {
       return response.json()
-   })
-   .then(({ jwt }) => {
+    })
+    .then(({ jwt }) => {
       if (jwt) {
         sessionStorage.setItem('token', JSON.stringify(jwt));
         goToHomePage();
       }
-   })
-   .catch(error => {
-     console.log(error)
-   })
-
-}
-
-const validateName = (maxLenght) => {
-  const nameValidateSpecialString = !/\W/g.test(inputLastname.value);
-  const nameHasOnlyString = !/\d/g.test(inputName.value);
-
-  const isNameValid = nameHasOnlyString && nameValidateSpecialString &&
-    nameHasOnlyString.length < maxLenght
-
-  return isNameValid
-}
-
-const validateEmail = () => {
-  const minLength = 6;
-  const maxLength = 24;
-  const emailValue = inputEmail.value;
-  const isEmailValid = emailValue.length >= minLength &&
-    emailValue.length <= maxLength &&
-    emailValue.slice(-4).includes('.com') && emailValue.includes('@');
-
-  return isEmailValid;
-}
-
-const validatePassword = () => {
-  const isBothPasswordsEqual = inputPassword[0].value === inputPassword[1].value;
-  let isPasswordsMaxLength = false;
-
-  inputPassword.forEach(input => {
-    if (input.value.length >= 6 && input.value.length <= 12) {
-      isPasswordsMaxLength = true;
-    }
-  })
-
-  const isPasswordValid = isBothPasswordsEqual && isPasswordsMaxLength;
-  return isPasswordValid;
+    })
+    .catch((error) => console.log(error))
 }
 
 const goToHomePage = () => {
-  window.location.href = '../Tarefas/index.html';
+  location.href = 'pages/Tarefas/index.html';
 }
