@@ -138,11 +138,51 @@ a {
   box-shadow: 2px 2px 5px lightgrey;
   border: 2px solid var(--secondary);
   z-index: 2;
-  transition: background-color 200ms linear;
+  transition: .2s;
+}
+
+.tarefa .done {
+  position: relative;
+
+  box-shadow: 2px 2px 5px lightgrey;
+  border: 2px solid var(--secondary);
+  z-index: 2;
+  transition: .2s;
+  background-color: var(--secondary);
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 1em;
+  border-radius: 50%;
+  cursor: pointer;
+  text-align: center;
+
+}
+
+.tarefa .done:hover {
+  background-color: var(--app-grey);
+}
+
+.tarefa .done .toggle-complete {
+  opacity: 1;
+}
+
+.tarefa .done:hover .toggle-complete {
+  opacity: 0;
+}
+
+.tarefa .not-done:hover .toggle-complete {
+  opacity: 1;
+
 }
 
 .tarefa .not-done:hover {
   background-color: var(--secondary);
+
+}
+
+i.ri-check-line {
+  font-size: 14px;
+  color: #fff;
 }
 
 .tarefa:first-child .not-done::before {
@@ -214,14 +254,6 @@ a {
   margin: 2em 15%;
 }
 
-.tarefas-terminadas i{
-  color: grey;
-  background-color: rgb(228, 228, 228);
-}
-.tarefas-terminadas button{
-  margin-left: 10px;
-}
-
 .tarefas-terminadas .tarefa .descricao {
   background-color: rgb(228, 228, 228);
 }
@@ -253,4 +285,16 @@ a {
 .ri-delete-bin-line {
   color: red;
   cursor: pointer;
+}
+
+button.toggle-complete {
+  opacity: 0;
+  border: none;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: var(--secondary);
+
 }
