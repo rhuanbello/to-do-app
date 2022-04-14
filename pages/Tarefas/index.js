@@ -5,6 +5,11 @@ const tasksContainerPending = document.querySelector('.tasks-container-pending')
 const createTaskForm = document.querySelector('button[type="submit"]')
 const inputDescricaoTarefa = document.querySelector('#novaTarea')
 
+const modal = document.querySelector('.modal')
+const cancelButton = document.querySelector('.cancel-button')
+const saveButton = document.querySelector('.save-button')
+const inputNameText = document.querySelector('.input-task-name')
+
 const url = 'https://ctd-todo-api.herokuapp.com/v1'
 
 const getUser = () => {
@@ -71,11 +76,11 @@ const deleteTask = (id) => {
     .catch(error => console.log(error))
 }
 
-const updateTaskStatus = ({ id, description, completed }) => {
+const putUpdateTask = ({ id, description, completed }, isComplete) => {
 
   const updateTaskObj = {
     description: description,
-    completed: !completed
+    completed: isComplete ? !completed : completed,
   }
 
   fetch(`${url}/tasks/${id}`, {
@@ -121,9 +126,12 @@ const renderTasks = (tasks) => {
             </button>
           </div>
           <div class="descricao">
-            <p class="nome">${description}</p>
+            <div class="name-container">
+              <p class="nome">${description}</p>
+              <i class="ri-edit-box-line"></i>
+            </div>
             <p class="timestamp">Criada em: ${handleFormatDate(createdAt)}
-            <i class="ri-delete-bin-line" ></i >
+            <i class="ri-delete-bin-line" ></i>
             </p>
           </div>
         </li>
@@ -137,7 +145,10 @@ const renderTasks = (tasks) => {
             </button>
           </div>
           <div class="descricao">
-            <p class="nome">${description}</p>
+            <div class="name-container">
+              <p class="nome">${description}</p>
+              <i class="ri-edit-box-line"></i>
+            </div>
             <p class="timestamp">Criada em: ${handleFormatDate(createdAt)}
             </p>
           </div>
@@ -152,18 +163,33 @@ const renderTasks = (tasks) => {
 
 const getUpdateTask = () => {
   const toggleComplete = document.querySelectorAll('.toggle-complete')
+  const editButton = document.querySelectorAll('.ri-edit-box-line')
+
+  editButton.forEach(button => {
+    button.addEventListener('click', () => {
+      modal.classList.toggle('appear')
+      const id = button.parentElement.parentElement.parentElement.getAttribute('data-id')
+      getTasks(id)
+    })
+  })
+
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && modal.classList.remove('appear'))
+
+  cancelButton.addEventListener('click', () => {
+    modal.classList.remove('appear')
+  })
 
   toggleComplete.forEach((button) => {
     button.addEventListener('click', () => {
       const task = button.parentElement.parentElement
       const id = task.getAttribute('data-id')
-      getTasks(id)
+      getTasks(id, true)
     })
   })
 
 }
 
-const getTasks = (id) => {
+const getTasks = (id, isComplete) => {
 
   const isGetById = id ? `/${id}` : '';
 
@@ -180,7 +206,11 @@ const getTasks = (id) => {
     })
     .then((data) => {
       if (isGetById) {
-        updateTaskStatus(data)
+        if (isComplete) {
+          putUpdateTask(data, true)
+        } else {
+          renderModal(data)
+        }
       } else {
         renderTasks(data)
         setTimeout(() => {
@@ -190,6 +220,35 @@ const getTasks = (id) => {
       }
     })
     .catch(error => console.log(error))
+}
+
+
+const updateTask = (data, { value }) => {
+  const newTaskObj = {
+    ...data,
+    description: value,
+  }
+
+  putUpdateTask(newTaskObj, false)
+  modal.classList.remove('appear')
+
+}
+
+const renderModal = (data) => {
+  inputNameText.focus()
+
+  const { description } = data
+
+  inputNameText.value = description;
+
+  saveButton.addEventListener('click', () => {
+    updateTask(data, inputNameText)
+  })
+
+  inputNameText.addEventListener('keypress', (e) => {
+    e.key === 'Enter' && updateTask(data, inputNameText)
+  })
+
 }
 
 const createTasks = (description) => {
@@ -237,7 +296,7 @@ inputDescricaoTarefa.addEventListener('keypress', (e) => {
   if (e.key == 'Enter') {
     e.preventDefault()
     createTasks(inputDescricaoTarefa.value)
-  } 
+  }
 })
 
 window.onload = () => {
