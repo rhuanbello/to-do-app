@@ -6,6 +6,7 @@ const inputPassword = Array.from(
 );
 const button = document.querySelector("button");
 const form = document.querySelector("form");
+const spinner = document.querySelector('.spinner');
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -17,6 +18,7 @@ form.addEventListener("submit", (e) => {
 
   if (validatePassword()) {
     postCreateUser();
+    toggleSpinnerVisibility(true);
   }
 });
 
@@ -27,6 +29,10 @@ const failBorderColor = (element) => {
 const successBorderColor = (element) => {
   element.style.borderColor = "green";
 };
+
+const toggleSpinnerVisibility = (condition) => {
+  spinner.style.visibility = condition ? 'visible' : 'hidden';
+}
 
 const postCreateUser = () => {
   const baseURL = "https://ctd-todo-api.herokuapp.com/v1";
@@ -57,7 +63,8 @@ const postCreateUser = () => {
     })
     .catch((error) => {
       console.log(error);
-    });
+    })
+    .finally(() => toggleSpinnerVisibility(false));
 };
 
 const validateName = (maxLenght) => {

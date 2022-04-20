@@ -1,6 +1,7 @@
 const form = document.querySelector('form');
 const inputEmail = document.querySelector('input[type="text"]');
 const inputPassword = document.querySelector('input[type="password"]');
+const spinner = document.querySelector('.spinner');
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -15,6 +16,7 @@ form.addEventListener('submit', (e) => {
 
   if (isEmailValid) {
     postUserLogin()
+    toggleSpinnerVisibility(true);
   } else {
     alert(`E-mail ${emailValue} inválido!`);
   }
@@ -46,6 +48,11 @@ const postUserLogin = () => {
       }
     })
     .catch((error) => console.log(error))
+    .finally(() => toggleSpinnerVisibility(false));
+}
+
+const toggleSpinnerVisibility = (condition) => {
+  spinner.style.visibility = condition ? 'visible' : 'hidden';
 }
 
 const goToHomePage = () => {
