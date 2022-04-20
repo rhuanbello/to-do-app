@@ -57,11 +57,15 @@ label {
 
 button {
   padding: .5em 3em;
-  background-color: var(--primary);
-  color: white;
   margin-top: 2em;
   font-weight: 400;
   font-size: 1em;
+}
+button:hover {
+  background-color: var(--primary);
+  color: white;
+  background-color: var(--secondary);
+  transition-duration: 0.2s;
 }
 
 .form-header {
